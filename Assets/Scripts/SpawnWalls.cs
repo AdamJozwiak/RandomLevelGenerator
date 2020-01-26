@@ -10,10 +10,4 @@ public class SpawnWalls : MonoBehaviour
     {
         Instantiate(wall, transform.position, Quaternion.identity);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

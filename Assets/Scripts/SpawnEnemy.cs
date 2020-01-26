@@ -17,7 +17,7 @@ public class SpawnEnemy : MonoBehaviour
         if(!enemySpawned && GameObject.FindGameObjectWithTag("LvlGen").GetComponent<LevelGeneration>().stopGen)
         {
             Spawn(enemyNumber);
-        }
+        }        
     }
 
     public void Spawn(int enemiesPerRoom)
@@ -58,10 +58,5 @@ public class SpawnEnemy : MonoBehaviour
         float randPosY = Random.Range(transform.position.y - 5.0f, transform.position.y + 5.0f);
         spawnPlace = new Vector2(randPosX, randPosY);
         groundDetection = Physics2D.OverlapCircle(spawnPlace, 1, ground);
-    }
-
-    public void resetSpawner()
-    {
-        enemySpawned = false;
     }
 }

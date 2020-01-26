@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CreateMap : MonoBehaviour
 {
     public GameObject spawnPoint;
     public GameObject wallsPoint;
+    public Camera camera;
+    public InputField enemiesNumber;
+    public InputField trophyChance;
 
     public int dimensionsX;
     public int dimensionsY;
@@ -21,6 +25,12 @@ public class CreateMap : MonoBehaviour
     public GameObject[] spawnPoints;
     public GameObject[] wallPoints;
 
+    private void Start()
+    {
+        enemiesNumber.text = "1";
+        trophyChance.text = "1";
+    }
+
     public GameObject[] GenerateMap()
     {
         spawnPoints = new GameObject[dimensionsX * dimensionsY];
@@ -33,6 +43,10 @@ public class CreateMap : MonoBehaviour
                 if(j == dimensionsX - 1)
                 {
                     maxX = transform.position.x + (j * 10);
+                }
+                if (i == dimensionsY / 2 && j == dimensionsX / 2)
+                {
+                    camera.transform.position = new Vector3(transform.position.x + (j * 10) - 5, transform.position.y - (i * 10) + 5, -10.0f);
                 }
             }
             if(i == dimensionsY - 1)
@@ -65,18 +79,28 @@ public class CreateMap : MonoBehaviour
     public void dimensionXChanged(string size)
     {
         dimensionsX = int.Parse(size);
-        ReloadMap();
+        StartCoroutine(waitTilGenerated(enemiesNumber.text, trophyChance.text));
     }
 
     public void dimensionYChanged(string size)
     {
         dimensionsY = int.Parse(size);
-        ReloadMap();
+        StartCoroutine(waitTilGenerated(enemiesNumber.text, trophyChance.text));
     }
 
     public void changeEnemiesNumber(string number)
     {
-        StartCoroutine(waitTilGenerated(number));
+        StartCoroutine(waitTilGenerated(number, trophyChance.text));
+    }
+
+    public void changeTrophyChance(string number)
+    {
+        StartCoroutine(waitTilGenerated(enemiesNumber.text, number));
+    }
+
+    public void adjustCamera(float size)
+    {
+        camera.orthographicSize = size;
     }
 
     private void ReloadMap()
@@ -89,7 +113,7 @@ public class CreateMap : MonoBehaviour
         GameObject.FindGameObjectWithTag("LvlGen").GetComponent<LevelGeneration>().Start();
     }
 
-    private IEnumerator waitTilGenerated(string number)
+    private IEnumerator waitTilGenerated(string enemyNumber, string trophyChance)
     {
         ReloadMap();
 
@@ -101,7 +125,13 @@ public class CreateMap : MonoBehaviour
         SpawnEnemy[] enemySpawners = GameObject.FindObjectsOfType<SpawnEnemy>();
         foreach (SpawnEnemy enemySpawner in enemySpawners)
         {
-            enemySpawner.GetComponent<SpawnEnemy>().Spawn(int.Parse(number));
+            enemySpawner.GetComponent<SpawnEnemy>().Spawn(int.Parse(enemyNumber));
+        }
+
+        SpawnTrophy[] trophySpawners = GameObject.FindObjectsOfType<SpawnTrophy>();
+        foreach (SpawnTrophy trophySpawner in trophySpawners)
+        {
+            trophySpawner.GetComponent<SpawnTrophy>().Spawn(int.Parse(trophyChance));
         }
     }
 }
